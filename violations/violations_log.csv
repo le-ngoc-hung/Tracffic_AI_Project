@@ -1,0 +1,47 @@
+﻿ID,Thời gian,Camera,Mã Track,Loại xe,Biển số (ANPR),Tốc độ (km/h),Lỗi vi phạm,Ảnh bằng chứng
+2,2026-11-10 22:05:12,CAM 3,#25,Truck,60C-470.80,60.4,Qua toc do (60/60 km/h),violations\cam3_truck_id25_20261110_220512.jpg
+3,2026-11-10 22:05:20,CAM 3,#14,Truck,29H-436.20,59.0,Cam xe tai (P.106a),violations\cam3_truck_id14_20261110_220520.jpg
+4,2026-11-10 22:12:51,CAM 3,#25,Truck,60C-470.80,60.4,Qua toc do (60/60 km/h),violations\cam3_truck_id25_20261110_221251.jpg
+5,2026-11-10 22:12:54,CAM 3,#14,Truck,29H-436.20,59.0,Cam xe tai (P.106a),violations\cam3_truck_id14_20261110_221254.jpg
+6,2026-11-10 22:13:06,CAM 3,#2,Truck,51C-652.44,53.0,Cam xe tai (P.106a),violations\cam3_truck_id2_20261110_221306.jpg
+7,2026-11-10 22:13:15,CAM 3,#142,Truck,29C-492.18,61.6,Qua toc do (62/60 km/h),violations\cam3_truck_id142_20261110_221314.jpg
+8,2026-11-10 22:13:16,CAM 3,#45,Car,51H-867.15,62.7,Qua toc do (63/60 km/h),violations\cam3_car_id45_20261110_221316.jpg
+9,2026-11-10 22:13:17,CAM 3,#79,Truck,60C-846.63,49.9,Cam xe tai (P.106a),violations\cam3_truck_id79_20261110_221317.jpg
+10,2026-11-10 22:13:20,CAM 3,#18,Truck,60C-580.56,47.7,Cam xe tai (P.106a),violations\cam3_truck_id18_20261110_221320.jpg
+11,2026-11-10 22:13:21,CAM 3,#118,Truck,60C-276.13,54.0,Cam xe tai (P.106a),violations\cam3_truck_id118_20261110_221321.jpg
+12,2026-11-10 22:13:23,CAM 3,#159,Truck,29H-811.89,63.3,Qua toc do (63/60 km/h),violations\cam3_truck_id159_20261110_221323.jpg
+13,2026-11-10 22:13:24,CAM 3,#197,Car,30K-779.50,63.5,Qua toc do (64/60 km/h),violations\cam3_car_id197_20261110_221324.jpg
+14,2026-11-10 22:13:26,CAM 3,#150,Car,51G-168.18,61.8,Qua toc do (62/60 km/h),violations\cam3_car_id150_20261110_221326.jpg
+15,2026-11-10 22:13:33,CAM 3,#127,Car,51K-331.52,63.1,Qua toc do (63/60 km/h),violations\cam3_car_id127_20261110_221333.jpg
+16,2026-11-10 22:13:34,CAM 3,#112,Car,43A-135.05,60.1,Qua toc do (60/60 km/h),violations\cam3_car_id112_20261110_221334.jpg
+17,2026-11-10 22:13:34,CAM 3,#117,Car,51K-586.39,61.9,Qua toc do (62/60 km/h),violations\cam3_car_id117_20261110_221334.jpg
+18,2026-11-10 22:13:42,CAM 3,#8,Truck,29H-151.09,59.1,Cam xe tai (P.106a),violations\cam3_truck_id8_20261110_221342.jpg
+19,2026-11-10 22:13:51,CAM 3,#283,Truck,51D-213.70,59.5,Cam xe tai (P.106a),violations\cam3_truck_id283_20261110_221351.jpg
+20,2026-11-10 22:14:01,CAM 3,#315,Car,51H-328.29,63.4,Qua toc do (63/60 km/h),violations\cam3_car_id315_20261110_221401.jpg
+21,2026-11-10 22:14:03,CAM 3,#294,Car,30G-584.37,62.8,Qua toc do (63/60 km/h),violations\cam3_car_id294_20261110_221403.jpg
+22,2026-11-10 22:14:05,CAM 1,#4,Motorbike,59-S2 155.51,53.2,Qua toc do (53/50 km/h),violations\cam1_motorbike_id4_20261110_221405.jpg
+23,2026-11-10 22:14:06,CAM 1,#20,Motorbike,59-S2 359.49,79.2,Qua toc do (79/50 km/h),violations\cam1_motorbike_id20_20261110_221406.jpg
+24,2026-11-10 22:14:15,CAM 4,#2,Car,51H-827.25,87.0,Qua toc do (87/80 km/h),violations\cam4_car_id2_20261110_221415.jpg
+25,2026-11-10 22:14:17,CAM 4,#16,Car,30K-698.44,104.2,Qua toc do (104/80 km/h),violations\cam4_car_id16_20261110_221417.jpg
+26,2026-11-10 22:14:19,CAM 4,#5,Car,43A-375.78,21.5,Di nguoc chieu / Lan lan,violations\cam4_car_id5_20261110_221419.jpg
+27,2026-11-10 22:14:26,CAM 4,#11,Car,30H-775.21,14.2,Di nguoc chieu / Lan lan,violations\cam4_car_id11_20261110_221426.jpg
+28,2026-11-10 22:14:26,CAM 4,#65,Car,30H-544.42,125.6,Qua toc do (126/80 km/h),violations\cam4_car_id65_20261110_221426.jpg
+29,2026-11-10 22:14:34,CAM 4,#30,Car,51H-755.57,20.2,Di nguoc chieu / Lan lan,violations\cam4_car_id30_20261110_221434.jpg
+30,2026-11-10 22:14:36,CAM 4,#94,Car,43A-342.32,83.5,Qua toc do (84/80 km/h),violations\cam4_car_id94_20261110_221436.jpg
+31,2026-11-10 22:14:39,CAM 4,#99,Car,51H-949.89,83.0,Qua toc do (83/80 km/h),violations\cam4_car_id99_20261110_221439.jpg
+32,2026-11-10 22:14:40,CAM 4,#4,Car,30G-428.48,83.3,Qua toc do (83/80 km/h),violations\cam4_car_id4_20261110_221440.jpg
+33,2026-11-10 22:14:44,CAM 4,#126,Car,43A-511.02,82.9,Qua toc do (83/80 km/h),violations\cam4_car_id126_20261110_221444.jpg
+34,2026-11-10 22:14:53,CAM 1,#4,Motorbike,59-S2 155.51,53.2,Qua toc do (53/50 km/h),violations\cam1_motorbike_id4_20261110_221453.jpg
+35,2026-11-10 22:14:54,CAM 1,#20,Motorbike,59-S2 359.49,79.2,Qua toc do (79/50 km/h),violations\cam1_motorbike_id20_20261110_221454.jpg
+36,2026-11-10 22:15:27,CAM 1,#259,Motorbike,43-C1 429.57,62.9,Qua toc do (63/50 km/h),violations\cam1_motorbike_id259_20261110_221527.jpg
+37,2026-11-10 22:15:30,CAM 1,#280,Motorbike,59-P1 381.86,55.1,Qua toc do (55/50 km/h),violations\cam1_motorbike_id280_20261110_221530.jpg
+38,2026-11-10 22:15:33,CAM 1,#291,Car,30H-698.42,52.5,Qua toc do (52/50 km/h),violations\cam1_car_id291_20261110_221533.jpg
+39,2026-11-10 22:15:36,CAM 1,#286,Motorbike,59-T1 264.59,53.9,Qua toc do (54/50 km/h),violations\cam1_motorbike_id286_20261110_221536.jpg
+40,2026-11-10 22:16:15,CAM 1,#515,Motorbike,30-F1 365.82,58.2,Qua toc do (58/50 km/h),violations\cam1_motorbike_id515_20261110_221615.jpg
+41,2026-11-10 22:16:23,CAM 1,#391,Motorbike,29-D1 189.75,24.5,Di nguoc chieu / Lan lan,violations\cam1_motorbike_id391_20261110_221623.jpg
+42,2026-11-10 22:16:24,CAM 1,#549,Motorbike,43-C1 711.08,55.3,Qua toc do (55/50 km/h),violations\cam1_motorbike_id549_20261110_221624.jpg
+43,2026-11-10 22:16:46,CAM 1,#457,Motorbike,30-F1 139.79,21.3,Di nguoc chieu / Lan lan,violations\cam1_motorbike_id457_20261110_221646.jpg
+44,2026-11-10 22:17:09,CAM 1,#759,Motorbike,43-C1 747.34,112.6,Qua toc do (113/50 km/h),violations\cam1_motorbike_id759_20261110_221709.jpg
+45,2026-11-10 22:17:12,CAM 1,#490,Motorbike,29-D1 399.82,27.0,Di nguoc chieu / Lan lan,violations\cam1_motorbike_id490_20261110_221712.jpg
+46,2026-11-10 22:17:13,CAM 1,#759,Motorbike,43-C1 747.34,88.0,Qua toc do (88/50 km/h),violations\cam1_motorbike_id759_20261110_221713.jpg
+47,2026-11-10 22:17:22,CAM 1,#816,Motorbike,59-P1 299.82,51.7,Qua toc do (52/50 km/h),violations\cam1_motorbike_id816_20261110_221722.jpg
