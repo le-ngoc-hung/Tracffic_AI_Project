@@ -1,0 +1,202 @@
+{
+  "1": {
+    "cam_key": "1",
+    "name": "CAM 1: Giao Thông Đô Thị VN (Normal)",
+    "video_path": "videos/cam1_normal.mp4",
+    "counting_line": [
+      [
+        55,
+        345
+      ],
+      [
+        815,
+        345
+      ]
+    ],
+    "roi_polygon": [
+      [
+        50,
+        175
+      ],
+      [
+        805,
+        175
+      ],
+      [
+        840,
+        465
+      ],
+      [
+        15,
+        465
+      ]
+    ],
+    "divider_line": [
+      [
+        412,
+        175
+      ],
+      [
+        405,
+        465
+      ]
+    ],
+    "direction_mode": "URBAN_2WAY",
+    "speed_limit_kmh": 50.0,
+    "meters_per_pixel": 0.085,
+    "congestion_threshold": 14,
+    "enable_no_truck_rule": false,
+    "enable_speed_rule": true,
+    "enable_wrong_way_rule": true
+  },
+  "2": {
+    "cam_key": "2",
+    "name": "CAM 2: Cảnh Báo Kẹt Xe (Jam)",
+    "video_path": "videos/cam2_jam.mp4",
+    "counting_line": [
+      [
+        60,
+        360
+      ],
+      [
+        780,
+        360
+      ]
+    ],
+    "roi_polygon": [
+      [
+        80,
+        140
+      ],
+      [
+        740,
+        140
+      ],
+      [
+        820,
+        470
+      ],
+      [
+        20,
+        470
+      ]
+    ],
+    "divider_line": [
+      [
+        410,
+        140
+      ],
+      [
+        410,
+        470
+      ]
+    ],
+    "direction_mode": "UP",
+    "speed_limit_kmh": 50.0,
+    "meters_per_pixel": 0.11,
+    "congestion_threshold": 9,
+    "enable_no_truck_rule": false,
+    "enable_speed_rule": true,
+    "enable_wrong_way_rule": true
+  },
+  "3": {
+    "cam_key": "3",
+    "name": "CAM 3: Bắt Lỗi Biển Báo & Phạt Nguội (Violation)",
+    "video_path": "videos/cam3_violation.mp4",
+    "counting_line": [
+      [
+        260,
+        355
+      ],
+      [
+        835,
+        355
+      ]
+    ],
+    "roi_polygon": [
+      [
+        280,
+        160
+      ],
+      [
+        770,
+        160
+      ],
+      [
+        845,
+        470
+      ],
+      [
+        240,
+        470
+      ]
+    ],
+    "divider_line": [
+      [
+        320,
+        160
+      ],
+      [
+        360,
+        470
+      ]
+    ],
+    "direction_mode": "DOWN",
+    "speed_limit_kmh": 60.0,
+    "meters_per_pixel": 0.14,
+    "congestion_threshold": 9,
+    "enable_no_truck_rule": true,
+    "enable_speed_rule": true,
+    "enable_wrong_way_rule": true
+  },
+  "4": {
+    "cam_key": "4",
+    "name": "CAM 4: Cao Tốc 2 Chiều (Highway)",
+    "video_path": "videos/cam4_highway.mp4",
+    "counting_line": [
+      [
+        60,
+        340
+      ],
+      [
+        825,
+        340
+      ]
+    ],
+    "roi_polygon": [
+      [
+        210,
+        175
+      ],
+      [
+        765,
+        175
+      ],
+      [
+        845,
+        470
+      ],
+      [
+        25,
+        470
+      ]
+    ],
+    "divider_line": [
+      [
+        640,
+        175
+      ],
+      [
+        475,
+        470
+      ]
+    ],
+    "direction_mode": "HIGHWAY_2WAY",
+    "speed_limit_kmh": 80.0,
+    "meters_per_pixel": 0.175,
+    "congestion_threshold": 10,
+    "enable_no_truck_rule": false,
+    "enable_speed_rule": true,
+    "enable_wrong_way_rule": true
+  }
+}
