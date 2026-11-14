@@ -1,3 +1,4 @@
+import os
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 import numpy as np
@@ -58,17 +59,32 @@ class UnifiedTrafficDetector:
         7: "Truck",
     }
 
+    @staticmethod
+    def _resolve_accelerated_model(pt_path: str) -> str:
+        """Auto-selects TensorRT (.engine) or ONNX (.onnx) beside .pt when available."""
+        stem, _ = os.path.splitext(pt_path)
+        for ext in (".engine", ".onnx"):
+            candidate = f"{stem}{ext}"
+            if os.path.exists(candidate):
+                return candidate
+        return pt_path
+
     def __init__(
         self,
         base_model_path: str = "yolov8s.pt",
         vn_model_path: str = "models/vehicle_model.pt",
         sign_model_path: str = "models/sign_model.pt",
+        prefer_accelerated: bool = True,
     ):
         print("[AI Core] Đang nạp hệ thống mô hình AI đa năng...")
-        self.base_model = YOLO(base_model_path)
-        self.vn_model = YOLO(vn_model_path)
-        self.sign_model = YOLO(sign_model_path)
-        print("[AI Core] Đã nạp thành công 3 mô hình YOLOv8!")
+        b_path = self._resolve_accelerated_model(base_model_path) if prefer_accelerated else base_model_path
+        v_path = self._resolve_accelerated_model(vn_model_path) if prefer_accelerated else vn_model_path
+        s_path = self._resolve_accelerated_model(sign_model_path) if prefer_accelerated else sign_model_path
+        self.base_model = YOLO(b_path)
+        self.vn_model = YOLO(v_path)
+        self.sign_model = YOLO(s_path)
+        self.backend_summary = f"base={os.path.basename(b_path)}, vn={os.path.basename(v_path)}, sign={os.path.basename(s_path)}"
+        print(f"[AI Core] Đã nạp thành công 3 mô hình ({self.backend_summary})!")
 
     def reset_tracker(self) -> None:
         """Resets ByteTrack state when switching between cameras."""

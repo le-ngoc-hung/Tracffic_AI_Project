@@ -1,0 +1,14 @@
+# Secrets & local AI configuration (do not commit API keys)
+configs/ai_settings.json
+.env
+
+# Cached TTS audio & runtime logs
+configs/tts_cache/
+logs/
+
+# Python bytecode & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/

@@ -1,0 +1,184 @@
+{
+  "anpr": {
+    "full_plate_accuracy_pct": 91.7,
+    "target_full_plate_pct": 85.0,
+    "character_accuracy_pct": 99.0,
+    "target_char_acc_pct": 92.0,
+    "honest_unreadable_rejection_pct": 100.0,
+    "target_rejection_pct": 100.0,
+    "details": [
+      {
+        "file": "plate_01.jpg",
+        "gt": "51C-482.19",
+        "pred": "51C-482.19",
+        "conf": 0.762,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_02.jpg",
+        "gt": "30H-719.05",
+        "pred": "30H-719.05",
+        "conf": 0.801,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_03.jpg",
+        "gt": "29A-864.20",
+        "pred": "29-A8 864.20",
+        "conf": 0.815,
+        "status": "READ",
+        "exact_match": false,
+        "char_acc": 87.5
+      },
+      {
+        "file": "plate_04.jpg",
+        "gt": "43A-195.88",
+        "pred": "43A-195.88",
+        "conf": 0.803,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_05.jpg",
+        "gt": "60C-512.34",
+        "pred": "60C-512.34",
+        "conf": 0.794,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_06.jpg",
+        "gt": "51G-903.41",
+        "pred": "51G-903.41",
+        "conf": 0.766,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_07.jpg",
+        "gt": "29C-338.12",
+        "pred": "29C-338.12",
+        "conf": 0.796,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_08.jpg",
+        "gt": "30K-641.77",
+        "pred": "30K-641.77",
+        "conf": 0.878,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_09.jpg",
+        "gt": "50F-218.65",
+        "pred": "50F-218.65",
+        "conf": 0.796,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_10.jpg",
+        "gt": "61C-704.92",
+        "pred": "61C-704.92",
+        "conf": 0.809,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_11.jpg",
+        "gt": "51D-825.10",
+        "pred": "51D-825.10",
+        "conf": 0.787,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "plate_12.jpg",
+        "gt": "29H-450.33",
+        "pred": "29H-450.33",
+        "conf": 0.906,
+        "status": "READ",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "unreadable_distant_01.jpg",
+        "gt": "KHÔNG ĐỌC ĐƯỢC",
+        "pred": "KHÔNG ĐỌC ĐƯỢC",
+        "conf": 0.0,
+        "status": "UNREADABLE",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "unreadable_distant_02.jpg",
+        "gt": "KHÔNG ĐỌC ĐƯỢC",
+        "pred": "KHÔNG ĐỌC ĐƯỢC",
+        "conf": 0.0,
+        "status": "UNREADABLE",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "unreadable_distant_03.jpg",
+        "gt": "KHÔNG ĐỌC ĐƯỢC",
+        "pred": "KHÔNG ĐỌC ĐƯỢC",
+        "conf": 0.0,
+        "status": "UNREADABLE",
+        "exact_match": true,
+        "char_acc": 100.0
+      },
+      {
+        "file": "unreadable_distant_04.jpg",
+        "gt": "KHÔNG ĐỌC ĐƯỢC",
+        "pred": "KHÔNG ĐỌC ĐƯỢC",
+        "conf": 0.0,
+        "status": "UNREADABLE",
+        "exact_match": true,
+        "char_acc": 100.0
+      }
+    ]
+  },
+  "tracking_and_counting": {
+    "track_stability_pct": 81.2,
+    "target_stability_pct": 70.0,
+    "cam3_gt_count": 5,
+    "cam3_sys_count": 5,
+    "counting_accuracy_pct": 100.0,
+    "target_counting_pct": 80.0
+  },
+  "congestion_detection": {
+    "cam2_congestion_accuracy_pct": 100.0,
+    "target_congestion_pct": 90.0
+  },
+  "traffic_sign_detection": {
+    "p106a_recall_pct": 100.0,
+    "p106a_mean_conf_pct": 66.6,
+    "target_recall_pct": 85.0
+  },
+  "speed_calibration": {
+    "reference_speed_kmh": 84.98,
+    "measured_speed_kmh": 84.98,
+    "mae_kmh": 0.0,
+    "target_mae_kmh": 3.0
+  },
+  "violation_reliability": {
+    "cam3_truck_p106a_detected": 2,
+    "cam2_false_positives": 0,
+    "false_negatives_cam3_p106a": 0
+  }
+}

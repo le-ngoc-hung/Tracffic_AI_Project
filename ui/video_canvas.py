@@ -1,8 +1,8 @@
 from typing import List, Optional, Tuple
 import cv2
 import numpy as np
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QImage, QMouseEvent, QPixmap
+from PyQt6.QtCore import QSize, Qt, pyqtSignal
+from PyQt6.QtGui import QImage, QMouseEvent, QPixmap, QResizeEvent
 from PyQt6.QtWidgets import QLabel, QSizePolicy
 
 
@@ -13,7 +13,7 @@ class InteractiveVideoCanvas(QLabel):
     - Counting Line (drag left mouse from point A to point B)
     - ROI Polygon (left-click vertices, right-click to finish polygon)
     - Lane Divider Line (drag left mouse from point A to point B)
-    Coordinates are automatically mapped between widget pixel space and 854x480 canvas space.
+    Uses QSizePolicy.Policy.Ignored and fixed sizeHint to prevent QPixmap layout feedback loops.
     """
 
     line_updated = pyqtSignal(list)      # Emits [[x1, y1], [x2, y2]]
@@ -26,11 +26,13 @@ class InteractiveVideoCanvas(QLabel):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumSize(720, 405)
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.setMinimumSize(480, 270)
+        # Policy.Ignored prevents QLabel.setPixmap from changing layout sizeHint and causing UI jumps
+        self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Ignored)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setText("⏳ Đang nạp mô hình AI & kết nối luồng camera...")
         self.setStyleSheet(
-            "background-color: #0d1117; border: 2px solid #30363d; border-radius: 8px;"
+            "background-color: #0b0f17; border: 1px solid #30363d; border-radius: 8px; color: #8b949e; font-size: 13px;"
         )
         self.setMouseTracking(True)
 
@@ -41,6 +43,17 @@ class InteractiveVideoCanvas(QLabel):
         self._drag_start: Optional[Tuple[int, int]] = None
         self._current_mouse: Optional[Tuple[int, int]] = None
         self._temp_roi_points: List[List[int]] = []
+
+    def sizeHint(self) -> QSize:
+        return QSize(640, 360)
+
+    def minimumSizeHint(self) -> QSize:
+        return QSize(480, 270)
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        super().resizeEvent(event)
+        if self._last_bgr_frame is not None:
+            self._refresh_display()
 
     def set_draw_mode(self, mode: str) -> None:
         self.draw_mode = mode
@@ -59,6 +72,10 @@ class InteractiveVideoCanvas(QLabel):
     def _refresh_display(self) -> None:
         if self._last_bgr_frame is None:
             return
+
+        rect = self.contentsRect()
+        target_w = max(64, rect.width() - 2)
+        target_h = max(36, rect.height() - 2)
 
         display = self._last_bgr_frame.copy()
 
@@ -97,7 +114,7 @@ class InteractiveVideoCanvas(QLabel):
         h, w, ch = rgb.shape
         qimg = QImage(rgb.data, w, h, ch * w, QImage.Format.Format_RGB888)
         pixmap = QPixmap.fromImage(qimg).scaled(
-            self.size(),
+            QSize(target_w, target_h),
             Qt.AspectRatioMode.KeepAspectRatio,
             Qt.TransformationMode.SmoothTransformation,
         )

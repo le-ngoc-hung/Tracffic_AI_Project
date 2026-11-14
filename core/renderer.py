@@ -1,9 +1,9 @@
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 import cv2
 import numpy as np
 
 from core.config_manager import CameraConfig
-from core.tracker_analytics import EnrichedVehicle, TrafficAnalyticsEngine
+from core.tracker_analytics import TrafficAnalyticsEngine
 
 
 VEHICLE_COLORS: Dict[str, Tuple[int, int, int]] = {
@@ -22,7 +22,7 @@ def render_annotated_canvas(
 ) -> np.ndarray:
     """
     Renders ROI polygon, counting line, lane divider, trajectories, bounding boxes,
-    speeds (km/h), ANPR license plates, and HUD status onto the 854x480 canvas.
+    calibrated/estimated speeds (km/h), honest ANPR status, and HUD onto the 854x480 canvas.
     """
     canvas = base_canvas.copy()
     overlay = canvas.copy()
@@ -74,46 +74,48 @@ def render_annotated_canvas(
             cv2.LINE_AA,
         )
 
-    # 4. Draw Detected Traffic Signs
+    # 4. Draw Detected Traffic Signs with confidence
     for sign in engine.active_signs:
         cv2.rectangle(canvas, (sign.x1, sign.y1), (sign.x2, sign.y2), (0, 0, 255), 2)
         cv2.putText(
             canvas,
-            f"Sign: {sign.sign_code}",
-            (max(10, sign.x1 - 25), max(18, sign.y1 - 8)),
+            f"Sign: {sign.sign_code} ({sign.conf*100:.0f}%)",
+            (max(10, sign.x1 - 35), max(18, sign.y1 - 8)),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.52,
+            0.48,
             (0, 0, 255),
             2,
             cv2.LINE_AA,
         )
 
-    # 5. Draw Vehicles, Trajectories, Speeds (km/h), and Violations
+    # 5. Draw Vehicles, Trajectories, Calibrated/Estimated Speeds, and Violations
     for v in engine.last_enriched_vehicles:
         box_color = (0, 0, 255) if v.is_violated else VEHICLE_COLORS.get(v.vehicle_type, (0, 255, 0))
 
-        # Draw motion trail
         if len(v.trail) >= 2:
             for i in range(1, len(v.trail)):
                 cv2.line(canvas, v.trail[i - 1], v.trail[i], box_color, 2, cv2.LINE_AA)
 
-        # Draw bounding box & centroid
         thickness = 3 if v.is_violated else 2
         cv2.rectangle(canvas, (v.x1, v.y1), (v.x2, v.y2), box_color, thickness)
         cv2.circle(canvas, (v.cx, v.cy), 3, (0, 0, 255), -1)
 
-        # Build label with ID, Type, Speed, and Plate if violated
         if v.track_id < 7000:
-            speed_tag = f" {v.speed_kmh:.0f}km/h" if v.speed_kmh >= 3.0 else ""
+            if v.speed_kmh >= 3.0:
+                prefix = "" if v.is_speed_calibrated else "~"
+                speed_tag = f" {prefix}{v.speed_kmh:.0f}km/h"
+            else:
+                speed_tag = ""
             label = f"#{v.track_id} {v.vehicle_type}{speed_tag}"
         else:
             label = f"{v.vehicle_type}"
 
         if v.is_violated:
-            plate_tag = f" [{v.plate_number}]" if v.plate_number else " [VIOLATION]"
-            label += plate_tag
+            if v.plate_status in ("READ", "LOW_CONFIDENCE") and v.plate_number != "KHÔNG ĐỌC ĐƯỢC":
+                label += f" [{v.plate_number}]"
+            else:
+                label += " [VIOLATION - Can KT]"
 
-        # Label background for readability
         (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.44, 1)
         ly = max(v.y1 - 6, th + 6)
         cv2.rectangle(canvas, (v.x1, ly - th - 4), (v.x1 + tw + 6, ly + 2), (20, 20, 25), -1)
@@ -128,70 +130,44 @@ def render_annotated_canvas(
             cv2.LINE_AA,
         )
 
-    # 6. Optional HUD Overlay on top-left of video
+    # 6. Optional Compact HUD Pill on top-left of video (leaves road & vehicles unobstructed)
     if show_hud_overlay:
+        st_color = (60, 80, 255) if is_congested else (80, 225, 110)
+        cal_tag = "Calibrated" if config.is_speed_calibrated else "~Est"
+        no_truck_on = config.enable_no_truck_rule and engine.rule_no_truck_detected
+        line1 = (
+            f"CAM {config.cam_key} | {engine.traffic_status} "
+            f"(ROI: {engine.vehicles_in_roi}/{config.congestion_threshold}) | Viol: {len(engine.violation_ids)}"
+        )
+        line2 = f"P.106a: {'ON' if no_truck_on else 'OFF'} | Max: {config.speed_limit_kmh:.0f}km/h ({cal_tag})"
+
+        (w1, _), _ = cv2.getTextSize(line1, cv2.FONT_HERSHEY_SIMPLEX, 0.45, 1)
+        (w2, _), _ = cv2.getTextSize(line2, cv2.FONT_HERSHEY_SIMPLEX, 0.40, 1)
+        box_w = min(base_canvas.shape[1] - 20, max(w1, w2) + 22)
+        box_h = 48
+
         hud = canvas.copy()
-        cv2.rectangle(hud, (10, 10), (315, 195), (20, 22, 30), -1)
-        cv2.addWeighted(hud, 0.78, canvas, 0.22, 0, canvas)
-        cv2.rectangle(canvas, (10, 10), (315, 195), (120, 130, 150), 1)
+        cv2.rectangle(hud, (10, 10), (10 + box_w, 10 + box_h), (16, 20, 28), -1)
+        cv2.addWeighted(hud, 0.72, canvas, 0.28, 0, canvas)
+        cv2.rectangle(canvas, (10, 10), (10 + box_w, 10 + box_h), st_color, 1)
 
         cv2.putText(
             canvas,
-            config.name[:34],
-            (20, 32),
+            line1,
+            (20, 30),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.48,
-            (0, 255, 255),
-            1,
-            cv2.LINE_AA,
-        )
-
-        st_color = (0, 0, 255) if is_congested else (0, 255, 100)
-        cv2.putText(
-            canvas,
-            f"STATUS: {engine.traffic_status} (ROI: {engine.vehicles_in_roi}/{config.congestion_threshold})",
-            (20, 56),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.50,
+            0.45,
             st_color,
-            2,
-            cv2.LINE_AA,
-        )
-
-        no_truck_on = config.enable_no_truck_rule and (engine.rule_no_truck_detected or config.cam_key == "3")
-        rule_text = f"P.106a: {'ON' if no_truck_on else 'OFF'} | MaxSpeed: {config.speed_limit_kmh:.0f}km/h"
-        cv2.putText(
-            canvas,
-            rule_text,
-            (20, 78),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.43,
-            (255, 190, 90),
             1,
             cv2.LINE_AA,
         )
-
-        y_off = 102
-        for v_name, cnt in engine.counts.items():
-            cv2.putText(
-                canvas,
-                f"- {v_name}: {cnt}",
-                (24, y_off),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.46,
-                (240, 240, 240),
-                1,
-                cv2.LINE_AA,
-            )
-            y_off += 20
-
         cv2.putText(
             canvas,
-            f"Avg Speed: {engine.avg_speed_kmh:.1f} km/h | Viol: {len(engine.violation_ids)}",
-            (20, 185),
+            line2,
+            (20, 49),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.44,
-            (100, 220, 255),
+            0.40,
+            (215, 225, 240),
             1,
             cv2.LINE_AA,
         )

@@ -3,3 +3,5 @@ numpy
 ultralytics
 lap>=0.5.12
 PyQt6
+rapidocr-onnxruntime
+requests

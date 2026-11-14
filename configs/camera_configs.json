@@ -42,12 +42,39 @@
       ]
     ],
     "direction_mode": "URBAN_2WAY",
+    "calibration_quad": [
+      [
+        180,
+        185
+      ],
+      [
+        680,
+        185
+      ],
+      [
+        820,
+        455
+      ],
+      [
+        40,
+        455
+      ]
+    ],
+    "real_world_width_m": 12.0,
+    "real_world_length_m": 24.0,
+    "is_speed_calibrated": true,
     "speed_limit_kmh": 50.0,
     "meters_per_pixel": 0.085,
     "congestion_threshold": 14,
+    "min_observation_frames": 4,
+    "min_violation_frames": 3,
+    "min_vehicle_conf": 0.45,
+    "min_sign_conf": 0.35,
+    "min_plate_conf": 0.65,
     "enable_no_truck_rule": false,
     "enable_speed_rule": true,
-    "enable_wrong_way_rule": true
+    "enable_wrong_way_rule": true,
+    "enable_illegal_parking_rule": false
   },
   "2": {
     "cam_key": "2",
@@ -92,12 +119,39 @@
       ]
     ],
     "direction_mode": "UP",
+    "calibration_quad": [
+      [
+        160,
+        160
+      ],
+      [
+        690,
+        160
+      ],
+      [
+        790,
+        460
+      ],
+      [
+        50,
+        460
+      ]
+    ],
+    "real_world_width_m": 14.0,
+    "real_world_length_m": 32.0,
+    "is_speed_calibrated": false,
     "speed_limit_kmh": 50.0,
     "meters_per_pixel": 0.11,
     "congestion_threshold": 9,
+    "min_observation_frames": 4,
+    "min_violation_frames": 3,
+    "min_vehicle_conf": 0.45,
+    "min_sign_conf": 0.35,
+    "min_plate_conf": 0.65,
     "enable_no_truck_rule": false,
     "enable_speed_rule": true,
-    "enable_wrong_way_rule": true
+    "enable_wrong_way_rule": true,
+    "enable_illegal_parking_rule": false
   },
   "3": {
     "cam_key": "3",
@@ -142,12 +196,39 @@
       ]
     ],
     "direction_mode": "DOWN",
+    "calibration_quad": [
+      [
+        340,
+        175
+      ],
+      [
+        720,
+        175
+      ],
+      [
+        835,
+        460
+      ],
+      [
+        260,
+        460
+      ]
+    ],
+    "real_world_width_m": 14.0,
+    "real_world_length_m": 36.0,
+    "is_speed_calibrated": true,
     "speed_limit_kmh": 60.0,
-    "meters_per_pixel": 0.14,
+    "meters_per_pixel": 0.135,
     "congestion_threshold": 9,
+    "min_observation_frames": 4,
+    "min_violation_frames": 3,
+    "min_vehicle_conf": 0.45,
+    "min_sign_conf": 0.35,
+    "min_plate_conf": 0.65,
     "enable_no_truck_rule": true,
     "enable_speed_rule": true,
-    "enable_wrong_way_rule": true
+    "enable_wrong_way_rule": true,
+    "enable_illegal_parking_rule": false
   },
   "4": {
     "cam_key": "4",
@@ -192,11 +273,115 @@
       ]
     ],
     "direction_mode": "HIGHWAY_2WAY",
+    "calibration_quad": [
+      [
+        250,
+        185
+      ],
+      [
+        750,
+        185
+      ],
+      [
+        835,
+        460
+      ],
+      [
+        45,
+        460
+      ]
+    ],
+    "real_world_width_m": 22.0,
+    "real_world_length_m": 45.0,
+    "is_speed_calibrated": true,
     "speed_limit_kmh": 80.0,
-    "meters_per_pixel": 0.175,
+    "meters_per_pixel": 0.165,
     "congestion_threshold": 10,
+    "min_observation_frames": 4,
+    "min_violation_frames": 3,
+    "min_vehicle_conf": 0.45,
+    "min_sign_conf": 0.35,
+    "min_plate_conf": 0.65,
     "enable_no_truck_rule": false,
     "enable_speed_rule": true,
-    "enable_wrong_way_rule": true
+    "enable_wrong_way_rule": true,
+    "enable_illegal_parking_rule": false
+  },
+  "5": {
+    "cam_key": "5",
+    "name": "CAM 5: Camera IP Cận Cảnh (ANPR & Đỗ Xe)",
+    "video_path": "videos/Traffic IP Camera video.mp4",
+    "counting_line": [
+      [
+        360,
+        195
+      ],
+      [
+        830,
+        195
+      ]
+    ],
+    "roi_polygon": [
+      [
+        110,
+        80
+      ],
+      [
+        830,
+        80
+      ],
+      [
+        840,
+        460
+      ],
+      [
+        60,
+        460
+      ]
+    ],
+    "divider_line": [
+      [
+        430,
+        80
+      ],
+      [
+        210,
+        460
+      ]
+    ],
+    "direction_mode": "DOWN",
+    "calibration_quad": [
+      [
+        380,
+        100
+      ],
+      [
+        810,
+        100
+      ],
+      [
+        835,
+        450
+      ],
+      [
+        220,
+        450
+      ]
+    ],
+    "real_world_width_m": 9.5,
+    "real_world_length_m": 18.0,
+    "is_speed_calibrated": true,
+    "speed_limit_kmh": 20.0,
+    "meters_per_pixel": 0.065,
+    "congestion_threshold": 8,
+    "min_observation_frames": 4,
+    "min_violation_frames": 3,
+    "min_vehicle_conf": 0.45,
+    "min_sign_conf": 0.35,
+    "min_plate_conf": 0.6,
+    "enable_no_truck_rule": true,
+    "enable_speed_rule": true,
+    "enable_wrong_way_rule": true,
+    "enable_illegal_parking_rule": true
   }
 }
