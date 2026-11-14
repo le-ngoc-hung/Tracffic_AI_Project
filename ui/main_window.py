@@ -32,7 +32,13 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from core.ai_voice_narrator import AISettings, ViolationVoiceWorker, load_ai_settings, save_ai_settings
+from core.ai_voice_narrator import (
+    AISettings,
+    ViolationVoiceWorker,
+    load_ai_settings,
+    save_ai_settings,
+    verify_gemini_api_key,
+)
 from core.config_manager import CameraConfig, ConfigManager
 from core.database import ViolationDatabase, ViolationRecord
 from core.detector import UnifiedTrafficDetector
@@ -563,10 +569,47 @@ class SettingsDialog(QDialog):
         self.spin_cooldown.setValue(float(settings.cooldown_seconds))
         vg.addWidget(self.spin_cooldown, 4, 1)
 
-        vg.addWidget(QLabel("Google AI Studio Key:"), 5, 0)
+        vg.addWidget(QLabel("Google AI Studio Key (.env):"), 5, 0)
+        api_row = QHBoxLayout()
+        api_row.setSpacing(6)
         self.edit_api_key = QLineEdit(settings.google_ai_api_key)
+        self.edit_api_key.setPlaceholderText(
+            "Paste Gemini API Key (saved to .env)..."
+            if is_en
+            else "Dán Google AI Studio Key (lưu tự động vào .env)..."
+        )
         self.edit_api_key.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
-        vg.addWidget(self.edit_api_key, 5, 1)
+        api_row.addWidget(self.edit_api_key, stretch=1)
+
+        self.btn_test_api = QPushButton("🔍 Test" if is_en else "🔍 Kiểm tra")
+        self.btn_test_api.setToolTip(
+            "Verify connection to Google AI Studio with the entered key"
+            if is_en
+            else "Kiểm tra nhanh kết nối Google AI Studio với key vừa nhập"
+        )
+        self.btn_test_api.clicked.connect(self._test_api_key)
+        api_row.addWidget(self.btn_test_api)
+        vg.addLayout(api_row, 5, 1)
+
+        has_key = bool((settings.google_ai_api_key or "").strip())
+        self.lbl_api_status = QLabel(
+            (
+                "🟢 API Key configured (.env). Paste a new key above anytime to replace it."
+                if is_en
+                else "🟢 Đã có API Key (từ .env). Bạn có thể dán key mới bất kỳ lúc nào rồi bấm Lưu."
+            )
+            if has_key
+            else (
+                "⚪ No API Key yet — paste your Google AI Studio Key above and click Save to enable Gemini AI."
+                if is_en
+                else "⚪ Chưa có API Key — dán Google AI Studio Key vào ô trên rồi bấm Lưu để kích hoạt AI Gemini."
+            )
+        )
+        self.lbl_api_status.setWordWrap(True)
+        self.lbl_api_status.setStyleSheet(
+            f"color: {'#3fb950' if has_key else '#d29922'}; font-size: 11px;"
+        )
+        vg.addWidget(self.lbl_api_status, 6, 0, 1, 2)
 
         layout.addWidget(voice_group)
 
@@ -587,9 +630,23 @@ class SettingsDialog(QDialog):
         if val is not None:
             self.spin_speed.setValue(float(val))
 
+    def _test_api_key(self) -> None:
+        lang = str(self.combo_ui_lang.currentData() or "vi")
+        key_val = self.edit_api_key.text().strip()
+        self.btn_test_api.setEnabled(False)
+        self.lbl_api_status.setText("⏳ Đang kiểm tra kết nối..." if lang != "en" else "⏳ Testing connection...")
+        self.lbl_api_status.setStyleSheet("color: #60a5fa; font-size: 11px;")
+        QApplication.processEvents()
+        ok, msg = verify_gemini_api_key(key_val, lang=lang)
+        self.lbl_api_status.setText(msg)
+        self.lbl_api_status.setStyleSheet(
+            f"color: {'#3fb950' if ok and '429' not in msg else ('#d29922' if ok else '#f85149')}; font-size: 11px;"
+        )
+        self.btn_test_api.setEnabled(True)
+
     def _save(self) -> None:
         updated = AISettings(
-            google_ai_api_key=self.edit_api_key.text().strip() or self.settings.google_ai_api_key,
+            google_ai_api_key=self.edit_api_key.text().strip(),
             text_model=self.settings.text_model,
             tts_model=self.settings.tts_model,
             tts_voice=self.settings.tts_voice,
@@ -634,6 +691,10 @@ class TrafficMonitoringWindow(QMainWindow):
         self._build_ui()
         self._apply_ui_language()
         self._fit_window_to_screen()
+        if not (self.ai_settings.google_ai_api_key or "").strip():
+            self.status_banner.setText(
+                "💡 Chưa có Google AI Studio API Key — mở '⚙️ Cài đặt' để dán key (tự lưu vào .env); hiện dùng giọng dự phòng."
+            )
 
         self.voice_worker = ViolationVoiceWorker(self.ai_settings, self)
         self.voice_worker.narration_ready.connect(self._on_voice_narration_ready)

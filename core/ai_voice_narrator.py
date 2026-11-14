@@ -37,6 +37,7 @@ from core.logger import get_app_logger
 logger = get_app_logger("ai_narrator")
 
 DEFAULT_GOOGLE_AI_API_KEY = os.environ.get("GOOGLE_AI_API_KEY", "").strip()
+ENV_FILE_PATH = ".env"
 AI_SETTINGS_PATH = "configs/ai_settings.json"
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
 
@@ -104,8 +105,60 @@ class AISettings:
     speech_rate: float = 1.0
 
 
-def load_ai_settings(path: str = AI_SETTINGS_PATH) -> AISettings:
-    """Đọc cấu hình AI Google Studio từ JSON (ưu tiên GEMINI_API_KEY nếu có trong env)."""
+def _read_api_key_from_env_file(env_path: str = ENV_FILE_PATH) -> str:
+    """Đọc GEMINI_API_KEY hoặc GOOGLE_AI_API_KEY từ file .env."""
+    p = Path(env_path)
+    if not p.exists():
+        return ""
+    try:
+        candidates: Dict[str, str] = {}
+        for raw_line in p.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            key_name = k.strip()
+            if key_name in ("GEMINI_API_KEY", "GOOGLE_AI_API_KEY"):
+                clean_val = v.strip().strip("\"'")
+                if clean_val and clean_val != "your_google_ai_studio_api_key_here":
+                    candidates[key_name] = clean_val
+        return candidates.get("GEMINI_API_KEY") or candidates.get("GOOGLE_AI_API_KEY") or ""
+    except Exception as exc:
+        logger.warning("Không đọc được %s (%s).", env_path, exc)
+        return ""
+
+
+def save_api_key_to_env(api_key: str, env_path: str = ENV_FILE_PATH) -> None:
+    """Lưu API Key vào file .env (thay thế GEMINI_API_KEY hoặc thêm mới, giữ nguyên dòng khác)."""
+    clean_key = (api_key or "").strip()
+    p = Path(env_path)
+    lines = p.read_text(encoding="utf-8").splitlines() if p.exists() else []
+    out_lines = []
+    replaced = False
+    for raw_line in lines:
+        stripped = raw_line.strip()
+        if stripped.startswith("GEMINI_API_KEY="):
+            if not replaced:
+                out_lines.append(f"GEMINI_API_KEY={clean_key}")
+                replaced = True
+        elif stripped.startswith("GOOGLE_AI_API_KEY="):
+            continue
+        else:
+            out_lines.append(raw_line)
+    if not replaced:
+        if not out_lines:
+            out_lines.append("# Google AI Studio (Gemini) API Key — KHÔNG commit file này lên Git (đã nằm trong .gitignore)")
+        out_lines.append(f"GEMINI_API_KEY={clean_key}")
+    p.write_text("\n".join(out_lines).rstrip() + "\n", encoding="utf-8")
+    if clean_key:
+        os.environ["GEMINI_API_KEY"] = clean_key
+    else:
+        os.environ.pop("GEMINI_API_KEY", None)
+        os.environ.pop("GOOGLE_AI_API_KEY", None)
+
+
+def load_ai_settings(path: str = AI_SETTINGS_PATH, env_path: str = ENV_FILE_PATH) -> AISettings:
+    """Đọc cấu hình từ configs/ai_settings.json và lấy API Key từ .env / biến môi trường."""
     settings = AISettings()
     file_path = Path(path)
     if file_path.exists():
@@ -119,32 +172,31 @@ def load_ai_settings(path: str = AI_SETTINGS_PATH) -> AISettings:
         except Exception as exc:
             logger.warning("Không đọc được %s (%s), dùng mặc định.", path, exc)
     else:
-        save_ai_settings(settings, path)
+        save_ai_settings(settings, path, env_path=env_path)
 
-    env_key = os.environ.get("GEMINI_API_KEY", "").strip()
-    if env_key:
+    dot_env_key = _read_api_key_from_env_file(env_path)
+    env_key = os.environ.get("GEMINI_API_KEY", "").strip() or os.environ.get("GOOGLE_AI_API_KEY", "").strip()
+    if dot_env_key:
+        settings.google_ai_api_key = dot_env_key
+    elif env_key:
         settings.google_ai_api_key = env_key
-    elif Path(".env").exists():
-        try:
-            for line in Path(".env").read_text(encoding="utf-8").splitlines():
-                if line.strip().startswith("GEMINI_API_KEY="):
-                    val = line.split("=", 1)[1].strip().strip("\"'")
-                    if val:
-                        settings.google_ai_api_key = val
-                        break
-        except Exception:
-            pass
-    if not settings.google_ai_api_key:
+    elif not settings.google_ai_api_key:
         settings.google_ai_api_key = DEFAULT_GOOGLE_AI_API_KEY
     return settings
 
 
-def save_ai_settings(settings: AISettings, path: str = AI_SETTINGS_PATH) -> None:
-    """Lưu cấu hình AI Google Studio xuống JSON."""
+def save_ai_settings(settings: AISettings, path: str = AI_SETTINGS_PATH, env_path: str = ENV_FILE_PATH) -> None:
+    """Lưu cấu hình AI xuống JSON (tách API Key sang .env để không lộ key trong file JSON)."""
+    api_key = (settings.google_ai_api_key or "").strip()
+    if api_key or Path(env_path).exists():
+        save_api_key_to_env(api_key, env_path=env_path)
+
+    payload = asdict(settings)
+    payload["google_ai_api_key"] = ""
     file_path = Path(path)
     file_path.parent.mkdir(parents=True, exist_ok=True)
     with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(asdict(settings), f, indent=2, ensure_ascii=False)
+        json.dump(payload, f, indent=2, ensure_ascii=False)
 
 
 def translate_vehicle_type(vehicle_type: str, lang: str = "vi") -> str:
@@ -601,6 +653,53 @@ class ViolationNarrator:
             return "text_only"
 
 
+def verify_gemini_api_key(api_key: str, lang: str = "vi", timeout_sec: float = 6.0) -> Tuple[bool, str]:
+    """
+    Kiểm tra nhanh Google AI Studio API Key bằng endpoint /models?pageSize=1
+    (không tiêu tốn token sinh văn bản/TTS).
+    Trả về (is_valid, status_message).
+    """
+    clean = (api_key or "").strip()
+    is_en = str(lang).lower() == "en"
+    if not clean:
+        return False, (
+            "Please enter a Google AI Studio API Key first."
+            if is_en
+            else "Vui lòng nhập Google AI Studio API Key trước khi kiểm tra."
+        )
+    try:
+        resp = requests.get(
+            f"{GEMINI_API_BASE}/models?pageSize=1",
+            headers={"x-goog-api-key": clean},
+            timeout=timeout_sec,
+        )
+        if resp.status_code == 200:
+            return True, (
+                "✅ API Key is valid and connected to Google AI Studio!"
+                if is_en
+                else "✅ API Key hợp lệ! Đã kết nối thành công Google AI Studio."
+            )
+        if resp.status_code == 429:
+            return True, (
+                "⚠️ API Key is valid but quota exceeded (HTTP 429) — fallback voice stays active."
+                if is_en
+                else "⚠️ API Key hợp lệ nhưng đang hết hạn mức (HTTP 429) — hệ thống tự dùng giọng dự phòng."
+            )
+        if resp.status_code in (400, 401, 403):
+            return False, (
+                f"❌ Invalid or unauthorized API Key (HTTP {resp.status_code})."
+                if is_en
+                else f"❌ API Key không hợp lệ hoặc bị từ chối (HTTP {resp.status_code})."
+            )
+        return False, f"⚠️ HTTP {resp.status_code}: {resp.text[:100]}"
+    except Exception as exc:
+        return False, (
+            f"❌ Connection failed: {exc}"
+            if is_en
+            else f"❌ Lỗi kết nối Google AI Studio: {exc}"
+        )
+
+
 class ViolationVoiceWorker(QThread):
     """QThread đọc lỗi vi phạm tuần tự ở nền, không làm đơ UI hay gián đoạn video."""
 
@@ -615,8 +714,13 @@ class ViolationVoiceWorker(QThread):
         self._last_spoken_at: Dict[Tuple[str, int, str], float] = {}
 
     def update_settings(self, new_settings: AISettings) -> None:
+        old_key = (self.settings.google_ai_api_key or "").strip() if self.settings else ""
+        new_key = (new_settings.google_ai_api_key or "").strip()
         self.settings = new_settings
         self.narrator.settings = new_settings
+        if new_key and new_key != old_key:
+            self.narrator._text_429_until = 0.0
+            self.narrator._tts_429_until = 0.0
         save_ai_settings(new_settings)
 
     def set_enabled(self, enabled: bool) -> None:
@@ -628,6 +732,8 @@ class ViolationVoiceWorker(QThread):
         if clean:
             self.settings.google_ai_api_key = clean
             self.narrator.settings = self.settings
+            self.narrator._text_429_until = 0.0
+            self.narrator._tts_429_until = 0.0
             save_ai_settings(self.settings)
 
     def enqueue(self, record: ViolationRecord, force: bool = False) -> None:
